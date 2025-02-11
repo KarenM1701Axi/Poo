@@ -34,6 +34,7 @@ var Producto = /** @class */ (function () {
 var Inventario = /** @class */ (function () {
     function Inventario() {
         this.productos = [];
+        this.totalVendidos = {};
     }
     // Agrega un producto al inventario 
     Inventario.prototype.agregarProducto = function (producto) {
@@ -61,20 +62,26 @@ var Inventario = /** @class */ (function () {
             }
         }
         if (!productoEncontrado) {
-            throw new Error("Producto no encontrado");
+            throw new Error("No se encontro producto");
         }
         productoEncontrado.decrementarCantidad(cantidad);
-        console.log("Venta");
-        console.log("Cantidad: ".concat(cantidad, " unidades  ").concat(nombre));
+        this.totalVendidos[nombre] = (this.totalVendidos[nombre] || 0) + cantidad;
+        console.log("Venta realizada: ".concat(cantidad, " unidades de ").concat(nombre));
     };
     // Consulta la información 
     Inventario.prototype.consultarInventario = function () {
         if (this.productos.length === 0) {
-            console.log("Inventario vasio ");
+            console.log("El inventario está vacío.");
         }
         else {
             console.log("Inventario actual:");
             this.productos.forEach(function (producto) { return producto.obtenerInfo(); });
+            console.log("Cantidad vendida por producto:");
+            for (var nombre in this.totalVendidos) {
+                console.log("- ".concat(nombre, ": ").concat(this.totalVendidos[nombre], " unidades vendidas"));
+            }
+            var totalProductosFinales = this.productos.reduce(function (total, p) { return total + p.cantidad; }, 0);
+            console.log("Cantidad total de productos en inventario: ".concat(totalProductosFinales));
         }
     };
     return Inventario;
@@ -85,22 +92,22 @@ function operarInventario(productos) {
 }
 // Productos
 var inventario = new Inventario();
-var cuaderno = new Producto("Cuaderno", 50, 25);
-var pluma = new Producto("Pluma", 100, 5);
-var resaltador = new Producto("Resaltador", 30, 15);
-inventario.agregarProducto(cuaderno);
-inventario.agregarProducto(pluma);
-inventario.agregarProducto(resaltador);
+var libreta = new Producto("Libreta", 50, 25);
+var colores = new Producto("Colores", 100, 5);
+var plumon = new Producto("Plumón", 30, 15);
+inventario.agregarProducto(libreta);
+inventario.agregarProducto(colores);
+inventario.agregarProducto(plumon);
 console.log("**Inventario inicial**");
 inventario.consultarInventario();
 console.log("** V E N T A **");
-inventario.venderProducto("Pluma", 10);
-inventario.venderProducto("Cuaderno", 5);
+inventario.venderProducto("Colores", 10);
+inventario.venderProducto("Libreta", 5);
 console.log("** Consulta despues de la venta **");
 inventario.consultarInventario();
 console.log("** Inventario con incremeneto **");
-inventario.agregarProducto(new Producto("Resaltador", 20, 15));
+inventario.agregarProducto(new Producto("Plumón", 20, 15));
 console.log("** Inventario final**");
 inventario.consultarInventario();
 console.log("** Resumen de los productos");
-operarInventario([cuaderno, pluma, resaltador]);
+operarInventario([libreta, colores, plumon]);

@@ -44,54 +44,61 @@ interface IProducto { // Se va a definir las operaciones básicas de un producto
   // consulta, venta y gestion de productos.
   class Inventario {
     private productos: Producto[] = [];
+    private totalVendidos: { [key: string]: number } = {};
   
     // Agrega un producto al inventario 
     agregarProducto(producto: Producto): void {
-      let existente = false;
-  
-      for (const p of this.productos) {
-        if (p.nombre === producto.nombre) {
-          p.incrementarCantidad(producto.cantidad);
-          existente = true;
-          break;
+        let existente = false;
+    
+        for (const p of this.productos) {
+          if (p.nombre === producto.nombre) {
+            p.incrementarCantidad(producto.cantidad);
+            existente = true;
+            break;
+          }
+        }
+    
+        if (!existente) {
+          this.productos.push(producto);
         }
       }
-  
-      if (!existente) {
-        this.productos.push(producto);
-      }
-    }
   
     // Realiza una venta de un producto 
     venderProducto(nombre: string, cantidad: number): void {
-      let productoEncontrado: Producto | null = null;
-  
-      for (const p of this.productos) {
-        if (p.nombre === nombre) {
-          productoEncontrado = p;
-          break;
+        let productoEncontrado: Producto | null = null;
+    
+        for (const p of this.productos) {
+          if (p.nombre === nombre) {
+            productoEncontrado = p;
+            break;
+          }
         }
+    
+        if (!productoEncontrado) {
+          throw new Error("No se encontro producto");
+        }
+    
+        productoEncontrado.decrementarCantidad(cantidad);
+        this.totalVendidos[nombre] = (this.totalVendidos[nombre] || 0) + cantidad;
+    
+        console.log(`Venta realizada: ${cantidad} unidades de ${nombre}`);
       }
-  
-      if (!productoEncontrado) {
-        throw new Error("Producto no encontrado");
-      }
-  
-      productoEncontrado.decrementarCantidad(cantidad);
-      console.log("Venta")
-      console.log(`Cantidad: ${cantidad} unidades  ${nombre}`);
-    }
-  
     // Consulta la información 
     consultarInventario(): void {
-      if (this.productos.length === 0) {
-        console.log("Inventario vasio ");
-      } else {
-        console.log("Inventario actual:");
-        this.productos.forEach((producto) => producto.obtenerInfo());
+        if (this.productos.length === 0) {
+          console.log("El inventario está vacío.");
+        } else {
+          console.log("Inventario actual:");
+          this.productos.forEach((producto) => producto.obtenerInfo());
+          console.log("Cantidad vendida por producto:");
+          for (const nombre in this.totalVendidos) {
+            console.log(`- ${nombre}: ${this.totalVendidos[nombre]} unidades vendidas`);
+          }
+          const totalProductosFinales = this.productos.reduce((total, p) => total + p.cantidad, 0);
+          console.log(`Cantidad total de productos en inventario: ${totalProductosFinales}`);
+        }
       }
     }
-  }
   
   // Función para operar en el inventario 
   function operarInventario(productos: Producto[]): void {
@@ -100,31 +107,31 @@ interface IProducto { // Se va a definir las operaciones básicas de un producto
   
   // Productos
   const inventario = new Inventario();
+
+  const libreta = new Producto("Libreta", 50, 25);
+  const colores = new Producto("Colores", 100, 5);
+  const plumon = new Producto("Plumón", 30, 15);
   
-  const cuaderno = new Producto("Cuaderno", 50, 25);
-  const pluma = new Producto("Pluma", 100, 5);
-  const resaltador = new Producto("Resaltador", 30, 15);
-  
-  inventario.agregarProducto(cuaderno);
-  inventario.agregarProducto(pluma);
-  inventario.agregarProducto(resaltador);
+  inventario.agregarProducto(libreta);
+  inventario.agregarProducto(colores);
+  inventario.agregarProducto(plumon);
   
   console.log("**Inventario inicial**");
   inventario.consultarInventario();
   
   console.log("** V E N T A **");
-  inventario.venderProducto("Pluma", 10);
-  inventario.venderProducto("Cuaderno", 5);
+inventario.venderProducto("Colores", 10);
+inventario.venderProducto("Libreta", 5);
   
   console.log("** Consulta despues de la venta **");
   inventario.consultarInventario();
   
   console.log("** Inventario con incremeneto **");
-  inventario.agregarProducto(new Producto("Resaltador", 20, 15));
+  inventario.agregarProducto(new Producto("Plumón", 20, 15));
   
   console.log("** Inventario final**");
   inventario.consultarInventario();
   
   console.log("** Resumen de los productos");
-  operarInventario([cuaderno, pluma, resaltador]);
+  operarInventario([libreta, colores, plumon]);
   
