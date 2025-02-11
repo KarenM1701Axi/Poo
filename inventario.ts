@@ -86,7 +86,7 @@ interface IProducto { // Se va a definir las operaciones básicas de un producto
     // Consulta la información 
     consultarInventario(): void {
         if (this.productos.length === 0) {
-          console.log("El inventario está vacío.");
+          console.log("El inventario está vacío");
         } else {
           console.log("Inventario actual:");
           this.productos.forEach((producto) => producto.obtenerInfo());

@@ -71,7 +71,7 @@ var Inventario = /** @class */ (function () {
     // Consulta la información 
     Inventario.prototype.consultarInventario = function () {
         if (this.productos.length === 0) {
-            console.log("El inventario está vacío.");
+            console.log("El inventario está vacío");
         }
         else {
             console.log("Inventario actual:");
